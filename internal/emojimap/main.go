@@ -41,7 +41,7 @@ func isOutputPathValid(outputPath string) bool {
 }
 
 func storeMapToJson(emojiMap map[string][]string, filePath string) {
-	data, err := json.Marshal(emojiMap)
+	data, err := json.MarshalIndent(emojiMap, "", "  ")
 	if err != nil {
 		log.Fatal(err)
 	}
