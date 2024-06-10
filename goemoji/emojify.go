@@ -35,6 +35,15 @@ func (e *Emojifier) Emojify(text string) string {
 	return e.strategy.Emojify(text, e.emojiTags, e.emojiSet)
 }
 
+func (e *Emojifier) ContainsEmoji(text string) bool {
+	emojis := e.ExtractEmojis(text)
+	return len(emojis) > 0
+}
+
+func (e *Emojifier) ExtractEmojis(text string) []string {
+	return extractEmojis(text, e.emojiSet)
+}
+
 func loadEmojiMap() (emojiMap map[string][]string, err error) {
 	data, err := emojiFileSystem.ReadFile(embedFileName)
 	if err != nil {
