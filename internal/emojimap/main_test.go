@@ -53,7 +53,7 @@ func Test_generateEmojiMap(t *testing.T) {
 	}
 
 	notAllowedCharacter := "_"
-	for key, _ := range result {
+	for key := range result {
 		if strings.Contains(key, notAllowedCharacter) {
 			t.Errorf("key '%s' should not contain '%s'", key, notAllowedCharacter)
 		}
