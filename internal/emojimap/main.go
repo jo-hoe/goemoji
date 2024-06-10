@@ -2,49 +2,103 @@ package main
 
 import (
 	"encoding/json"
-	"log"
+	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 const (
 	URL = "https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json"
 )
 
-type emoji struct {
-	Emoji     string   `json:"emoji"`
-	Description string `json:"description"`
-	Aliases   []string `json:"aliases"`
-	Tags      []string `json:"tags"`
+type Emoji struct {
+	Emoji       string   `json:"emoji"`
+	Description string   `json:"description"`
+	Aliases     []string `json:"aliases"`
+	Tags        []string `json:"tags"`
 }
 
-
-// creates the json map based on
-// https://github.com/github/gemoji/blob/master/db/emoji.json
 func main() {
-	// create emoji map
-	emojis := make([]emoji, 0)
+	emojiMap := generateEmojiMap()
+	storeMapToJson(emojiMap, getFilePathOfExecutable())
+}
 
-	response, err := http.Get(URL)
+func storeMapToJson(emojiMap map[string][]string, filePath string) {
+	filePath = filepath.Join(filePath, "emoji_map.json")
+	data, err := json.MarshalIndent(emojiMap, "", "  ")
 	if err != nil {
-		log.Fatalln(err)
+		panic(err)
 	}
 
-	// unmashal json response and put it in a map with. maps keys is a word(s) from the field
-	// "description", "aliases", or "tags" values is a list of emoji(s)
-	decoder := json.NewDecoder(response.Body)
-	err = decoder.Decode(&emojis)
+	err = ioutil.WriteFile(filePath, data, 0644)
 	if err != nil {
-		log.Fatalln(err)
+		panic(err)
+	}
+	fmt.Printf("Emoji map generated and stored at: %s\n", filePath)
+}
+
+func getFilePathOfExecutable() string {
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	return filepath.Dir(ex)
+}
+
+func generateEmojiMap() map[string][]string {
+	resp, err := http.Get("https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json")
+	if err != nil {
+		fmt.Printf("Error fetching data: %v\n", err)
+		return nil
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Error reading response body: %v\n", err)
+		return nil
 	}
 
-	// create a map of emoji to their description, aliases, and tags
+	var emojis []Emoji
+	err = json.Unmarshal(data, &emojis)
+	if err != nil {
+		fmt.Printf("Error unmarshaling JSON: %v\n", err)
+		return nil
+	}
+
 	emojiMap := make(map[string][]string)
-	for _, e := range emojis {
-		// add emojies of descriptions and aliases in front
-		// convert aliases to remove "_" to " "
-		// add tags last
+	for _, emoji := range emojis {
+		addToMap(emojiMap, strings.ToLower(emoji.Description), emoji.Emoji, true)
+		for _, alias := range emoji.Aliases {
+			addToMap(emojiMap, strings.ToLower(alias), emoji.Emoji, true)
+		}
+		for _, tag := range emoji.Tags {
+			addToMap(emojiMap, strings.ToLower(tag), emoji.Emoji, false)
+		}
 	}
 
-	// store map in json
+	return emojiMap
+}
 
+func addToMap(m map[string][]string, key, emoji string, prepend bool) {
+	sanitizedKey := strings.ReplaceAll(key, "_", " ")
+
+	if _, ok := m[sanitizedKey]; !ok {
+		m[sanitizedKey] = []string{}
+	}
+
+	for _, alias := range m[sanitizedKey] {
+		if alias == emoji {
+			return
+		}
+	}
+
+	if prepend {
+		m[sanitizedKey] = append([]string{emoji}, m[sanitizedKey]...)
+	} else {
+		m[sanitizedKey] = append(m[sanitizedKey], emoji)
+	}
 }
