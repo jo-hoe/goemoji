@@ -33,17 +33,19 @@ func (r ReplaceSubstring) Emojify(input string, emojiTags map[string][]string, e
 type InsertBeforeString struct{}
 
 func (i InsertBeforeString) Emojify(input string, emojiTags map[string][]string, emojiSet map[string]bool) string {
-	emojiString := ReplaceSubstring{}.Emojify(input, emojiTags, emojiSet)
-	emojis := extractEmojis(emojiString, emojiSet)
-	return fmt.Sprintf("%s %s", strings.Join(emojis, ""), input)
+	return fmt.Sprintf("%s %s", getEmojisString(input, emojiTags, emojiSet), input)
 }
 
 type InsertAfterString struct{}
 
 func (i InsertAfterString) Emojify(input string, emojiTags map[string][]string, emojiSet map[string]bool) (output string) {
-	emojiString := ReplaceSubstring{}.Emojify(input, emojiTags, emojiSet)
-	emojis := extractEmojis(emojiString, emojiSet)
-	return fmt.Sprintf("%s %s", input, strings.Join(emojis, ""))
+	return fmt.Sprintf("%s %s", input, getEmojisString(input, emojiTags, emojiSet))
+}
+
+func getEmojisString(input string, emojiTags map[string][]string, emojiSet map[string]bool) string {
+	emojiString := ReplaceSubstring{}.Emojify(input, emojiTags, nil)
+	emojies := extractEmojis(emojiString, emojiSet)
+	return strings.Join(emojies, "")
 }
 
 func extractEmojis(input string, emojiSet map[string]bool) []string {
@@ -63,17 +65,6 @@ func getFirstEmoji(token string, emojiMap map[string][]string) (emoji string, su
 		return emojis[0], token
 	}
 	return "", ""
-}
-
-func recursiveTokenize(input string, numWords int) []string {
-	words := strings.Split(input, " ")
-	tokens := make([]string, 0)
-
-	for i := numWords; i > 0; i-- {
-		tokens = append(tokens, combineTokens(words, i)...)
-	}
-
-	return tokens
 }
 
 func combineTokens(words []string, numWords int) []string {

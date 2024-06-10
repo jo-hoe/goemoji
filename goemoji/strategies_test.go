@@ -206,31 +206,3 @@ func Test_combineTokens(t *testing.T) {
 		})
 	}
 }
-
-func Test_recursiveTokenize(t *testing.T) {
-	type args struct {
-		input    string
-		numWords int
-	}
-	tests := []struct {
-		name string
-		args args
-		want []string
-	}{
-		{
-			name: "test recursion",
-			args: args{
-				input:    "The quick brown fox",
-				numWords: 2,
-			},
-			want: []string{"The quick", "quick brown", "brown fox", "The", "quick", "brown", "fox"},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := recursiveTokenize(tt.args.input, tt.args.numWords); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("recursiveTokenize() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
