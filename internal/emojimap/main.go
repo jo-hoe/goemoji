@@ -92,7 +92,7 @@ func getMaxWordsInKey(emojiMap map[string][]string) (int, string) {
 	max := 0
 	longestKey := ""
 
-	for key, _ := range emojiMap {
+	for key := range emojiMap {
 		words := strings.Split(key, " ")
 		numberOfWords := len(words)
 		if numberOfWords > max {
