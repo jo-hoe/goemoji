@@ -34,6 +34,10 @@ func generateMap(outputPath string) {
 	}
 	emojiMap := generateEmojiMap(URL)
 	storeMapToJson(emojiMap, outputPath)
+	log.Printf("emoji map generated and stored at: %s\n", outputPath)
+
+	maxKeyLenth, longestKey := getMaxWordsInKey(emojiMap)
+	log.Printf("longest key '%s' was '%d' words long\n", longestKey, maxKeyLenth)
 }
 
 func isOutputPathValid(outputPath string) bool {
@@ -50,7 +54,6 @@ func storeMapToJson(emojiMap map[string][]string, filePath string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("emoji map generated and stored at: %s\n", filePath)
 }
 
 func generateEmojiMap(url string) map[string][]string {
@@ -83,6 +86,21 @@ func generateEmojiMap(url string) map[string][]string {
 	}
 
 	return emojiMap
+}
+
+func getMaxWordsInKey(emojiMap map[string][]string) (int, string) {
+	max := 0
+	longestKey := ""
+
+	for key, _ := range emojiMap {
+		words := strings.Split(key, " ")
+		numberOfWords := len(words)
+		if numberOfWords > max {
+			max = numberOfWords
+			longestKey = key
+		}
+	}
+	return max, longestKey
 }
 
 func addToMap(m map[string][]string, key, emoji string, prepend bool) {

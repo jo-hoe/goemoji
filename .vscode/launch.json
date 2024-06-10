@@ -12,7 +12,7 @@
             "program": "${workspaceFolder}/internal/emojimap/main.go",
             "args": [
                 "-output-path",
-                "${workspaceFolder}/internal/emojimap/emoji_map.json"
+                "${workspaceFolder}/goemoji/emoji_map.json"
             ]
         }
     ]
