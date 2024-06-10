@@ -2,16 +2,17 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
+	"flag"
+	"io"
+	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
 const (
-	URL = "https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json"
+	URL              = "https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json"
+	OUTPUT_FILE_NAME = "emoji_map.json"
 )
 
 type Emoji struct {
@@ -22,51 +23,52 @@ type Emoji struct {
 }
 
 func main() {
-	emojiMap := generateEmojiMap()
-	storeMapToJson(emojiMap, getFilePathOfExecutable())
+	outputPath := flag.String("output-path", "", "defines where the emoji map will be stored")
+	flag.Parse()
+	generateMap(*outputPath)
+}
+
+func generateMap(outputPath string) {
+	if !isOutputPathValid(outputPath) {
+		log.Fatal("'-output-path' flag is required")
+	}
+	emojiMap := generateEmojiMap(URL)
+	storeMapToJson(emojiMap, outputPath)
+}
+
+func isOutputPathValid(outputPath string) bool {
+	return outputPath != ""
 }
 
 func storeMapToJson(emojiMap map[string][]string, filePath string) {
-	filePath = filepath.Join(filePath, "emoji_map.json")
-	data, err := json.MarshalIndent(emojiMap, "", "  ")
+	data, err := json.Marshal(emojiMap)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	err = ioutil.WriteFile(filePath, data, 0644)
+	err = os.WriteFile(filePath, data, 0644)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	fmt.Printf("Emoji map generated and stored at: %s\n", filePath)
+	log.Printf("emoji map generated and stored at: %s\n", filePath)
 }
 
-func getFilePathOfExecutable() string {
-	ex, err := os.Executable()
+func generateEmojiMap(url string) map[string][]string {
+	resp, err := http.Get(url)
 	if err != nil {
-		panic(err)
-	}
-	return filepath.Dir(ex)
-}
-
-func generateEmojiMap() map[string][]string {
-	resp, err := http.Get("https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json")
-	if err != nil {
-		fmt.Printf("Error fetching data: %v\n", err)
-		return nil
+		log.Fatalf("error fetching data: %v\n", err)
 	}
 	defer resp.Body.Close()
 
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
-		return nil
+		log.Fatalf("error reading response body: %v\n", err)
 	}
 
 	var emojis []Emoji
 	err = json.Unmarshal(data, &emojis)
 	if err != nil {
-		fmt.Printf("Error unmarshaling JSON: %v\n", err)
-		return nil
+		log.Fatalf("error unmarshaling JSON: %v\n", err)
 	}
 
 	emojiMap := make(map[string][]string)
