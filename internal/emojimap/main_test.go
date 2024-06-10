@@ -10,7 +10,7 @@ import (
 func Test_generateEmojiMap(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`
+		_, err := w.Write([]byte(`
 		[
 			{
 				"emoji": "😀",
@@ -41,6 +41,10 @@ func Test_generateEmojiMap(t *testing.T) {
 				"ios_version": "9.1"
 			}
 		]`))
+
+		if err != nil {
+			t.Error(err)
+		}
 	}))
 	defer ts.Close()
 
