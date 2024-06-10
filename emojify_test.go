@@ -9,7 +9,7 @@ const mockStrategyReturn = "🍎"
 
 type MockStrategy struct{}
 
-func (i MockStrategy) Emojify(input string, emojiTags map[string][]string, emojiSet map[string]bool) (output string) {
+func (i MockStrategy) Emojify(input string, minimumWordLength int, emojiTags map[string][]string, emojiSet map[string]bool) (output string) {
 	return mockStrategyReturn
 }
 
@@ -25,14 +25,24 @@ func TestEmojifier_ContainsEmoji(t *testing.T) {
 	}{
 		{
 			name: "what a delicious apple",
-			e:    &Emojifier{strategy: MockStrategy{}, emojiTags: defaultEmojiTags, emojiSet: defaultEmojiSet},
+			e: &Emojifier{
+				strategy:          MockStrategy{},
+				minimumWordLength: 4,
+				emojiTags:         defaultEmojiTags,
+				emojiSet:          defaultEmojiSet,
+			},
 			args: args{
 				text: "what a delicious 🍎",
 			},
 			want: true,
 		}, {
 			name: "does not contain emoji",
-			e:    &Emojifier{strategy: MockStrategy{}, emojiTags: defaultEmojiTags, emojiSet: defaultEmojiSet},
+			e: &Emojifier{
+				strategy:          MockStrategy{},
+				minimumWordLength: 4,
+				emojiTags:         defaultEmojiTags,
+				emojiSet:          defaultEmojiSet,
+			},
 			args: args{
 				text: "what a delicious apple",
 			},
@@ -60,7 +70,12 @@ func TestEmojifier_ExtractEmojis(t *testing.T) {
 	}{
 		{
 			name: "extract emojis",
-			e:    &Emojifier{strategy: MockStrategy{}, emojiTags: defaultEmojiTags, emojiSet: defaultEmojiSet},
+			e: &Emojifier{
+				strategy:          MockStrategy{},
+				minimumWordLength: 4,
+				emojiTags:         defaultEmojiTags,
+				emojiSet:          defaultEmojiSet,
+			},
 			args: args{
 				text: "what a delicious 🍎🍏🍍",
 			},
@@ -88,7 +103,12 @@ func TestEmojifier_Emojify(t *testing.T) {
 	}{
 		{
 			name: "test emojify",
-			e:    &Emojifier{strategy: MockStrategy{}, emojiTags: defaultEmojiTags, emojiSet: defaultEmojiSet},
+			e: &Emojifier{
+				strategy:          MockStrategy{},
+				minimumWordLength: 4,
+				emojiTags:         defaultEmojiTags,
+				emojiSet:          defaultEmojiSet,
+			},
 			args: args{
 				text: "what a delicious apple",
 			},
@@ -105,7 +125,7 @@ func TestEmojifier_Emojify(t *testing.T) {
 }
 
 func TestNewEmojifier(t *testing.T) {
-	emojifier, err := NewEmojifier(MockStrategy{})
+	emojifier, err := NewEmojifier(MockStrategy{}, 4)
 
 	if err != nil {
 		t.Errorf("NewEmojifier() error = %v", err)

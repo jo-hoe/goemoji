@@ -13,26 +13,32 @@ const (
 )
 
 type Emojifier struct {
-	strategy  EmojifyStrategy
-	emojiTags map[string][]string
-	emojiSet  map[string]bool
+	strategy          EmojifyStrategy
+	emojiTags         map[string][]string
+	emojiSet          map[string]bool
+	minimumWordLength int
 }
 
-func NewEmojifier(strategy EmojifyStrategy) (*Emojifier, error) {
+func NewDefaultEmojifier() (*Emojifier, error) {
+	return NewEmojifier(ReplaceSubstring{}, 4)
+}
+
+func NewEmojifier(strategy EmojifyStrategy, minimumWordLength int) (*Emojifier, error) {
 	loadedMap, err := loadEmojiMap()
 	if err != nil {
 		return nil, err
 	}
 
 	return &Emojifier{
-		strategy:  strategy,
-		emojiTags: loadedMap,
-		emojiSet:  createEmojiSet(loadedMap),
+		strategy:          strategy,
+		emojiTags:         loadedMap,
+		emojiSet:          createEmojiSet(loadedMap),
+		minimumWordLength: minimumWordLength,
 	}, nil
 }
 
 func (e *Emojifier) Emojify(text string) string {
-	return e.strategy.Emojify(text, e.emojiTags, e.emojiSet)
+	return e.strategy.Emojify(text, e.minimumWordLength, e.emojiTags, e.emojiSet)
 }
 
 func (e *Emojifier) ContainsEmoji(text string) bool {

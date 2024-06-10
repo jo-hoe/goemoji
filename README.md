@@ -7,6 +7,29 @@
 
 Adds emojis to strings.
 
+## Usage
+
+```golang
+input := "Music puts a smile on my face."
+
+emojifier, err := goemoji.NewDefaultEmojifier()
+if err != nil {
+    panic(err)
+}
+println(emojifier.Emojify(input))
+
+emojifier, err = goemoji.NewEmojifier(goemoji.InsertBeforeString{}, 4)
+if err != nil {
+    panic(err)
+}
+println(emojifier.Emojify(input))
+```
+
+```bash
+🎶 puts a 😄 on my face.
+🎶😄 Music puts a smile on my face.
+```
+
 ## Development Setup
 
 ### Pre-Requisites

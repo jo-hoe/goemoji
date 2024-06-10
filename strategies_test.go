@@ -10,9 +10,10 @@ var defaultEmojiSet = map[string]bool{"🍎": true, "🍏": true, "🍍": true}
 
 func TestInsertBeforeString_Emojify(t *testing.T) {
 	type args struct {
-		input    string
-		emojiMap map[string][]string
-		emojiSet map[string]bool
+		input             string
+		emojiMap          map[string][]string
+		emojiSet          map[string]bool
+		minimumWordLength int
 	}
 	tests := []struct {
 		name       string
@@ -24,34 +25,37 @@ func TestInsertBeforeString_Emojify(t *testing.T) {
 			name: "single word replacement",
 			i:    InsertBeforeString{},
 			args: args{
-				input:    "they ate an apple",
-				emojiMap: defaultEmojiTags,
-				emojiSet: defaultEmojiSet,
+				input:             "they ate an apple",
+				emojiMap:          defaultEmojiTags,
+				emojiSet:          defaultEmojiSet,
+				minimumWordLength: 1,
 			},
 			wantOutput: "🍎 they ate an apple",
 		}, {
 			name: "multi-word emoji replacement",
 			i:    InsertBeforeString{},
 			args: args{
-				input:    "they ate a green apple",
-				emojiMap: defaultEmojiTags,
-				emojiSet: defaultEmojiSet,
+				input:             "they ate a green apple",
+				emojiMap:          defaultEmojiTags,
+				emojiSet:          defaultEmojiSet,
+				minimumWordLength: 1,
 			},
 			wantOutput: "🍏 they ate a green apple",
 		}, {
 			name: "multi-word multi-emoji replacement",
 			i:    InsertBeforeString{},
 			args: args{
-				input:    "they ate an apple and a green apple and a pineapple",
-				emojiMap: defaultEmojiTags,
-				emojiSet: defaultEmojiSet,
+				input:             "they ate an apple and a green apple and a pineapple",
+				emojiMap:          defaultEmojiTags,
+				emojiSet:          defaultEmojiSet,
+				minimumWordLength: 1,
 			},
 			wantOutput: "🍎🍏🍍 they ate an apple and a green apple and a pineapple",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.emojiMap, tt.args.emojiSet); gotOutput != tt.wantOutput {
+			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.minimumWordLength, tt.args.emojiMap, tt.args.emojiSet); gotOutput != tt.wantOutput {
 				t.Errorf("InsertBeforeString.Emojify() = %v, want %v", gotOutput, tt.wantOutput)
 			}
 		})
@@ -63,6 +67,8 @@ func TestInsertAfterString_Emojify(t *testing.T) {
 		input    string
 		emojiMap map[string][]string
 		emojiSet map[string]bool
+
+		minimumWordLength int
 	}
 	tests := []struct {
 		name       string
@@ -74,34 +80,37 @@ func TestInsertAfterString_Emojify(t *testing.T) {
 			name: "single word replacement",
 			i:    InsertAfterString{},
 			args: args{
-				input:    "they ate an apple",
-				emojiMap: defaultEmojiTags,
-				emojiSet: defaultEmojiSet,
+				input:             "they ate an apple",
+				emojiMap:          defaultEmojiTags,
+				emojiSet:          defaultEmojiSet,
+				minimumWordLength: 1,
 			},
 			wantOutput: "they ate an apple 🍎",
 		}, {
 			name: "multi-word emoji replacement",
 			i:    InsertAfterString{},
 			args: args{
-				input:    "they ate a green apple",
-				emojiMap: defaultEmojiTags,
-				emojiSet: defaultEmojiSet,
+				input:             "they ate a green apple",
+				emojiMap:          defaultEmojiTags,
+				emojiSet:          defaultEmojiSet,
+				minimumWordLength: 1,
 			},
 			wantOutput: "they ate a green apple 🍏",
 		}, {
 			name: "multi-word multi-emoji replacement",
 			i:    InsertAfterString{},
 			args: args{
-				input:    "they ate an apple and a green apple and a pineapple",
-				emojiMap: defaultEmojiTags,
-				emojiSet: defaultEmojiSet,
+				input:             "they ate an apple and a green apple and a pineapple",
+				emojiMap:          defaultEmojiTags,
+				emojiSet:          defaultEmojiSet,
+				minimumWordLength: 1,
 			},
 			wantOutput: "they ate an apple and a green apple and a pineapple 🍎🍏🍍",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.emojiMap, tt.args.emojiSet); gotOutput != tt.wantOutput {
+			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.minimumWordLength, tt.args.emojiMap, tt.args.emojiSet); gotOutput != tt.wantOutput {
 				t.Errorf("InsertBeforeString.Emojify() = %v, want %v", gotOutput, tt.wantOutput)
 			}
 		})
@@ -110,9 +119,10 @@ func TestInsertAfterString_Emojify(t *testing.T) {
 
 func TestReplaceSubstring_Emojify(t *testing.T) {
 	type args struct {
-		input    string
-		emojiMap map[string][]string
-		emojiSet map[string]bool
+		input             string
+		emojiMap          map[string][]string
+		emojiSet          map[string]bool
+		minimumWordLength int
 	}
 	tests := []struct {
 		name       string
@@ -124,34 +134,37 @@ func TestReplaceSubstring_Emojify(t *testing.T) {
 			name: "single word replacement",
 			i:    ReplaceSubstring{},
 			args: args{
-				input:    "they ate an apple",
-				emojiMap: defaultEmojiTags,
-				emojiSet: defaultEmojiSet,
+				input:             "they ate an apple",
+				emojiMap:          defaultEmojiTags,
+				emojiSet:          defaultEmojiSet,
+				minimumWordLength: 1,
 			},
 			wantOutput: "they ate an 🍎",
 		}, {
 			name: "multi-word emoji replacement",
 			i:    ReplaceSubstring{},
 			args: args{
-				input:    "they ate a green apple",
-				emojiMap: defaultEmojiTags,
-				emojiSet: defaultEmojiSet,
+				input:             "they ate a green apple",
+				emojiMap:          defaultEmojiTags,
+				emojiSet:          defaultEmojiSet,
+				minimumWordLength: 1,
 			},
 			wantOutput: "they ate a 🍏",
 		}, {
 			name: "multi-word multi-emoji replacement",
 			i:    ReplaceSubstring{},
 			args: args{
-				input:    "they ate an apple and a green apple and a pineapple",
-				emojiMap: defaultEmojiTags,
-				emojiSet: defaultEmojiSet,
+				input:             "they ate an apple and a green apple and a pineapple",
+				emojiMap:          defaultEmojiTags,
+				emojiSet:          defaultEmojiSet,
+				minimumWordLength: 1,
 			},
 			wantOutput: "they ate an 🍎 and a 🍏 and a 🍍",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.emojiMap, tt.args.emojiSet); gotOutput != tt.wantOutput {
+			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.minimumWordLength, tt.args.emojiMap, tt.args.emojiSet); gotOutput != tt.wantOutput {
 				t.Errorf("got '%v', want '%v'", gotOutput, tt.wantOutput)
 			}
 		})

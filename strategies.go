@@ -10,17 +10,20 @@ const (
 )
 
 type EmojifyStrategy interface {
-	Emojify(input string, emojiTags map[string][]string, emojiSet map[string]bool) (output string)
+	Emojify(input string, minimumWordLength int, emojiTags map[string][]string, emojiSet map[string]bool) (output string)
 }
 
 type ReplaceSubstring struct{}
 
-func (r ReplaceSubstring) Emojify(input string, emojiTags map[string][]string, emojiSet map[string]bool) (output string) {
-	currentString := input
+func (r ReplaceSubstring) Emojify(input string, minimumWordLength int, emojiTags map[string][]string, emojiSet map[string]bool) (output string) {
+	currentString := strings.ToLower(input)
 	for i := maxKeyLength; i > 0; i-- {
 		words := strings.Split(currentString, " ")
 		tokens := combineTokens(words, i)
 		for _, token := range tokens {
+			if len(token) < minimumWordLength {
+				continue
+			}
 			emoji, substring := getFirstEmoji(token, emojiTags)
 			if substring != "" {
 				currentString = strings.Replace(currentString, substring, emoji, 1)
@@ -32,18 +35,18 @@ func (r ReplaceSubstring) Emojify(input string, emojiTags map[string][]string, e
 
 type InsertBeforeString struct{}
 
-func (i InsertBeforeString) Emojify(input string, emojiTags map[string][]string, emojiSet map[string]bool) string {
-	return fmt.Sprintf("%s %s", getEmojisString(input, emojiTags, emojiSet), input)
+func (i InsertBeforeString) Emojify(input string, minimumWordLength int, emojiTags map[string][]string, emojiSet map[string]bool) string {
+	return fmt.Sprintf("%s %s", getEmojisString(input, minimumWordLength, emojiTags, emojiSet), input)
 }
 
 type InsertAfterString struct{}
 
-func (i InsertAfterString) Emojify(input string, emojiTags map[string][]string, emojiSet map[string]bool) (output string) {
-	return fmt.Sprintf("%s %s", input, getEmojisString(input, emojiTags, emojiSet))
+func (i InsertAfterString) Emojify(input string, minimumWordLength int, emojiTags map[string][]string, emojiSet map[string]bool) (output string) {
+	return fmt.Sprintf("%s %s", input, getEmojisString(input, minimumWordLength, emojiTags, emojiSet))
 }
 
-func getEmojisString(input string, emojiTags map[string][]string, emojiSet map[string]bool) string {
-	emojiString := ReplaceSubstring{}.Emojify(input, emojiTags, nil)
+func getEmojisString(input string, minimumWordLength int, emojiTags map[string][]string, emojiSet map[string]bool) string {
+	emojiString := ReplaceSubstring{}.Emojify(input, minimumWordLength, emojiTags, nil)
 	emojies := extractEmojis(emojiString, emojiSet)
 	return strings.Join(emojies, "")
 }
@@ -51,7 +54,8 @@ func getEmojisString(input string, emojiTags map[string][]string, emojiSet map[s
 func extractEmojis(input string, emojiSet map[string]bool) []string {
 	results := make([]string, 0)
 
-	for _, r := range input {
+	lowerInput := strings.ToLower(input)
+	for _, r := range lowerInput {
 		if _, ok := emojiSet[string(r)]; ok {
 			results = append(results, string(r))
 		}
