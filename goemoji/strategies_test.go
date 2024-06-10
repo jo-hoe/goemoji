@@ -5,12 +5,14 @@ import (
 	"testing"
 )
 
-var defaultEmojiMap = map[string][]string{"apple": {"🍎", "🍏"}, "green apple": {"🍏"}, "pineapple": {"🍍"}}
+var defaultEmojiTags = map[string][]string{"apple": {"🍎", "🍏"}, "green apple": {"🍏"}, "pineapple": {"🍍"}}
+var defaultEmojiSet = map[string]bool{"🍎": true, "🍏": true, "🍍": true}
 
 func TestInsertBeforeString_Emojify(t *testing.T) {
 	type args struct {
 		input    string
 		emojiMap map[string][]string
+		emojiSet map[string]bool
 	}
 	tests := []struct {
 		name       string
@@ -23,7 +25,8 @@ func TestInsertBeforeString_Emojify(t *testing.T) {
 			i:    InsertBeforeString{},
 			args: args{
 				input:    "they ate an apple",
-				emojiMap: defaultEmojiMap,
+				emojiMap: defaultEmojiTags,
+				emojiSet: defaultEmojiSet,
 			},
 			wantOutput: "🍎 they ate an apple",
 		}, {
@@ -31,7 +34,8 @@ func TestInsertBeforeString_Emojify(t *testing.T) {
 			i:    InsertBeforeString{},
 			args: args{
 				input:    "they ate a green apple",
-				emojiMap: defaultEmojiMap,
+				emojiMap: defaultEmojiTags,
+				emojiSet: defaultEmojiSet,
 			},
 			wantOutput: "🍏 they ate a green apple",
 		}, {
@@ -39,14 +43,15 @@ func TestInsertBeforeString_Emojify(t *testing.T) {
 			i:    InsertBeforeString{},
 			args: args{
 				input:    "they ate an apple and a green apple and a pineapple",
-				emojiMap: defaultEmojiMap,
+				emojiMap: defaultEmojiTags,
+				emojiSet: defaultEmojiSet,
 			},
 			wantOutput: "🍎🍏🍍 they ate an apple and a green apple and a pineapple",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.emojiMap); gotOutput != tt.wantOutput {
+			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.emojiMap, tt.args.emojiSet); gotOutput != tt.wantOutput {
 				t.Errorf("InsertBeforeString.Emojify() = %v, want %v", gotOutput, tt.wantOutput)
 			}
 		})
@@ -57,6 +62,7 @@ func TestInsertAfterString_Emojify(t *testing.T) {
 	type args struct {
 		input    string
 		emojiMap map[string][]string
+		emojiSet map[string]bool
 	}
 	tests := []struct {
 		name       string
@@ -69,7 +75,8 @@ func TestInsertAfterString_Emojify(t *testing.T) {
 			i:    InsertAfterString{},
 			args: args{
 				input:    "they ate an apple",
-				emojiMap: defaultEmojiMap,
+				emojiMap: defaultEmojiTags,
+				emojiSet: defaultEmojiSet,
 			},
 			wantOutput: "they ate an apple 🍎",
 		}, {
@@ -77,7 +84,8 @@ func TestInsertAfterString_Emojify(t *testing.T) {
 			i:    InsertAfterString{},
 			args: args{
 				input:    "they ate a green apple",
-				emojiMap: defaultEmojiMap,
+				emojiMap: defaultEmojiTags,
+				emojiSet: defaultEmojiSet,
 			},
 			wantOutput: "they ate a green apple 🍏",
 		}, {
@@ -85,14 +93,15 @@ func TestInsertAfterString_Emojify(t *testing.T) {
 			i:    InsertAfterString{},
 			args: args{
 				input:    "they ate an apple and a green apple and a pineapple",
-				emojiMap: defaultEmojiMap,
+				emojiMap: defaultEmojiTags,
+				emojiSet: defaultEmojiSet,
 			},
 			wantOutput: "they ate an apple and a green apple and a pineapple 🍎🍏🍍",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.emojiMap); gotOutput != tt.wantOutput {
+			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.emojiMap, tt.args.emojiSet); gotOutput != tt.wantOutput {
 				t.Errorf("InsertBeforeString.Emojify() = %v, want %v", gotOutput, tt.wantOutput)
 			}
 		})
@@ -103,6 +112,7 @@ func TestReplaceSubstring_Emojify(t *testing.T) {
 	type args struct {
 		input    string
 		emojiMap map[string][]string
+		emojiSet map[string]bool
 	}
 	tests := []struct {
 		name       string
@@ -115,7 +125,8 @@ func TestReplaceSubstring_Emojify(t *testing.T) {
 			i:    ReplaceSubstring{},
 			args: args{
 				input:    "they ate an apple",
-				emojiMap: defaultEmojiMap,
+				emojiMap: defaultEmojiTags,
+				emojiSet: defaultEmojiSet,
 			},
 			wantOutput: "they ate an 🍎",
 		}, {
@@ -123,7 +134,8 @@ func TestReplaceSubstring_Emojify(t *testing.T) {
 			i:    ReplaceSubstring{},
 			args: args{
 				input:    "they ate a green apple",
-				emojiMap: defaultEmojiMap,
+				emojiMap: defaultEmojiTags,
+				emojiSet: defaultEmojiSet,
 			},
 			wantOutput: "they ate a 🍏",
 		}, {
@@ -131,14 +143,15 @@ func TestReplaceSubstring_Emojify(t *testing.T) {
 			i:    ReplaceSubstring{},
 			args: args{
 				input:    "they ate an apple and a green apple and a pineapple",
-				emojiMap: defaultEmojiMap,
+				emojiMap: defaultEmojiTags,
+				emojiSet: defaultEmojiSet,
 			},
 			wantOutput: "they ate an 🍎 and a 🍏 and a 🍍",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.emojiMap); gotOutput != tt.wantOutput {
+			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.emojiMap, tt.args.emojiSet); gotOutput != tt.wantOutput {
 				t.Errorf("got '%v', want '%v'", gotOutput, tt.wantOutput)
 			}
 		})

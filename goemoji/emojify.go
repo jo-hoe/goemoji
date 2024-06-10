@@ -13,8 +13,9 @@ const (
 )
 
 type Emojifier struct {
-	strategy EmojifyStrategy
-	emojiMap map[string][]string
+	strategy  EmojifyStrategy
+	emojiTags map[string][]string
+	emojiSet  map[string]bool
 }
 
 func NewEmojifier(strategy EmojifyStrategy) (*Emojifier, error) {
@@ -24,13 +25,14 @@ func NewEmojifier(strategy EmojifyStrategy) (*Emojifier, error) {
 	}
 
 	return &Emojifier{
-		strategy: strategy,
-		emojiMap: loadedMap,
+		strategy:  strategy,
+		emojiTags: loadedMap,
+		emojiSet:  createEmojiSet(loadedMap),
 	}, nil
 }
 
 func (e *Emojifier) Emojify(text string) string {
-	return e.strategy.Emojify(text, e.emojiMap)
+	return e.strategy.Emojify(text, e.emojiTags, e.emojiSet)
 }
 
 func loadEmojiMap() (emojiMap map[string][]string, err error) {
@@ -43,4 +45,14 @@ func loadEmojiMap() (emojiMap map[string][]string, err error) {
 	}
 
 	return emojiMap, nil
+}
+
+func createEmojiSet(emojiTags map[string][]string) map[string]bool {
+	result := make(map[string]bool, 0)
+	for _, emojis := range emojiTags {
+		for _, emoji := range emojis {
+			result[emoji] = true
+		}
+	}
+	return result
 }
