@@ -16,18 +16,18 @@ emojifier, err := goemoji.NewDefaultEmojifier()
 if err != nil {
     panic(err)
 }
-println(emojifier.Emojify(input))
+log.Println(emojifier.Emojify(input))
 
 emojifier, err = goemoji.NewEmojifier(goemoji.InsertBeforeString{}, 4)
 if err != nil {
     panic(err)
 }
-println(emojifier.Emojify(input))
+log.Println(emojifier.Emojify(input))
 ```
 
 ```bash
-🎶 puts a 😄 on my face.
-🎶😄 Music puts a smile on my face.
+2024/01/01 12:00:00 🎶 puts a 😄 on my face.
+2024/01/01 12:00:00 🎶😄 Music puts a smile on my face.
 ```
 
 ## Development Setup
