@@ -1,0 +1,42 @@
+on:
+  schedule:
+    # Run twice a year: January 15th and July 15th at 03:00 UTC
+    - cron: '0 3 15 1 *'  # January 15th
+    - cron: '0 3 15 7 *'  # July 15th
+  workflow_dispatch: # Allow manual triggering
+
+name: update-emoji-map
+jobs:
+  update-emoji-map:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: 1.24.x
+    
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Update emoji map
+      run: make update-emojimap
+    
+    - name: Check for changes
+      id: changes
+      run: |
+        if git diff --quiet emoji_map.json; then
+          echo "changed=false" >> $GITHUB_OUTPUT
+        else
+          echo "changed=true" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Commit and push changes
+      if: steps.changes.outputs.changed == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add emoji_map.json
+        git commit -m "chore: update emoji map"
+        git push

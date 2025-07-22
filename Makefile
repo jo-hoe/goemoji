@@ -5,7 +5,7 @@ ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 .PHONY: test
 test: ## runs all tests
-	go test ./...
+	go test $(ROOT_DIR)...
 
 .PHONY: update-emojimap
 update-emojimap: ## generates a new version of the emoji map
