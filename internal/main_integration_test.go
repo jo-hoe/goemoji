@@ -20,7 +20,7 @@ func Test_generateMap(t *testing.T) {
 	}
 }
 
-func Test_storeMapToJson_ValidMap(t *testing.T) {
+func Test_storeMapToJSON_ValidMap(t *testing.T) {
 	emojiMap := map[string][]string{
 		"smile": {"😄", "😃"},
 		"laugh": {"🤣"},
@@ -28,7 +28,7 @@ func Test_storeMapToJson_ValidMap(t *testing.T) {
 	filePath := path.Join(os.TempDir(), "unittest_emoji_map.json")
 	defer os.Remove(filePath)
 
-	storeMapToJson(emojiMap, filePath)
+	storeMapToJSON(emojiMap, filePath)
 
 	data, err := os.ReadFile(filePath)
 	if err != nil {

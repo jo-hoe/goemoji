@@ -11,6 +11,7 @@ func main() {
 }
 
 func example() {
+	const minWordLength = 4
 	input := "Music puts a smile on my face."
 
 	emojifier, err := goemoji.NewDefaultEmojifier()
@@ -19,7 +20,7 @@ func example() {
 	}
 	log.Println(emojifier.Emojify(input))
 
-	emojifier, err = goemoji.NewEmojifier(goemoji.InsertBeforeString{}, 4)
+	emojifier, err = goemoji.NewEmojifier(goemoji.InsertBeforeString{}, minWordLength)
 	if err != nil {
 		panic(err)
 	}

@@ -55,7 +55,8 @@ func TestInsertBeforeString_Emojify(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.minimumWordLength, tt.args.emojiMap, tt.args.emojiSet); gotOutput != tt.wantOutput {
+			gotOutput := tt.i.Emojify(tt.args.input, tt.args.minimumWordLength, tt.args.emojiMap, tt.args.emojiSet)
+			if gotOutput != tt.wantOutput {
 				t.Errorf("InsertBeforeString.Emojify() = %v, want %v", gotOutput, tt.wantOutput)
 			}
 		})
@@ -110,8 +111,9 @@ func TestInsertAfterString_Emojify(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.minimumWordLength, tt.args.emojiMap, tt.args.emojiSet); gotOutput != tt.wantOutput {
-				t.Errorf("InsertBeforeString.Emojify() = %v, want %v", gotOutput, tt.wantOutput)
+			gotOutput := tt.i.Emojify(tt.args.input, tt.args.minimumWordLength, tt.args.emojiMap, tt.args.emojiSet)
+			if gotOutput != tt.wantOutput {
+				t.Errorf("InsertAfterString.Emojify() = %v, want %v", gotOutput, tt.wantOutput)
 			}
 		})
 	}
@@ -164,7 +166,8 @@ func TestReplaceSubstring_Emojify(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotOutput := tt.i.Emojify(tt.args.input, tt.args.minimumWordLength, tt.args.emojiMap, tt.args.emojiSet); gotOutput != tt.wantOutput {
+			gotOutput := tt.i.Emojify(tt.args.input, tt.args.minimumWordLength, tt.args.emojiMap, tt.args.emojiSet)
+			if gotOutput != tt.wantOutput {
 				t.Errorf("got '%v', want '%v'", gotOutput, tt.wantOutput)
 			}
 		})

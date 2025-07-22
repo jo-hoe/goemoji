@@ -9,7 +9,12 @@ const mockStrategyReturn = "🍎"
 
 type MockStrategy struct{}
 
-func (i MockStrategy) Emojify(input string, minimumWordLength int, emojiTags map[string][]string, emojiSet map[string]bool) (output string) {
+func (i MockStrategy) Emojify(
+	input string,
+	minimumWordLength int,
+	emojiTags map[string][]string,
+	emojiSet map[string]bool,
+) (output string) {
 	return mockStrategyReturn
 }
 
@@ -132,5 +137,48 @@ func TestNewEmojifier(t *testing.T) {
 	}
 	if emojifier == nil {
 		t.Errorf("NewEmojifier() emojifier = %v", emojifier)
+	}
+}
+
+func TestNewEmojifier_ValidationErrors(t *testing.T) {
+	tests := []struct {
+		name              string
+		strategy          EmojifyStrategy
+		minimumWordLength int
+		wantErr           bool
+	}{
+		{
+			name:              "nil strategy",
+			strategy:          nil,
+			minimumWordLength: 4,
+			wantErr:           true,
+		},
+		{
+			name:              "negative minimum word length",
+			strategy:          MockStrategy{},
+			minimumWordLength: -1,
+			wantErr:           true,
+		},
+		{
+			name:              "zero minimum word length",
+			strategy:          MockStrategy{},
+			minimumWordLength: 0,
+			wantErr:           false,
+		},
+		{
+			name:              "valid parameters",
+			strategy:          MockStrategy{},
+			minimumWordLength: 4,
+			wantErr:           false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := NewEmojifier(tt.strategy, tt.minimumWordLength)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewEmojifier() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
 	}
 }
