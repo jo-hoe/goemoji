@@ -6,7 +6,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/jo-hoe/goemoji/badge.svg?branch=main)](https://coveralls.io/github/jo-hoe/goemoji?branch=main)
 [![Go Reference](https://pkg.go.dev/badge/github.com/jo-hoe/goemoji.svg)](https://pkg.go.dev/github.com/jo-hoe/goemoji)
 
-A Go library that intelligently adds emojis to text using configurable strategies. Transform plain text into expressive, emoji-rich content with multiple insertion modes and customizable word matching.
+A Go library that adds emojis to text using configurable strategies. Transform plain text into expressive, emoji-rich content with multiple insertion modes and customizable word matching.
 
 ## Features
 
